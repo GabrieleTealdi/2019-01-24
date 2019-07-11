@@ -5,6 +5,7 @@
 package it.polito.tdp.extflightdelays;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.extflightdelays.model.Model;
@@ -47,21 +48,59 @@ public class ExtFlightDelaysController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-
+    	this.model.creagrafo();
+    	this.cmbBoxStati.getItems().addAll();
+    	List<String> stati = model.getStati();
+    	cmbBoxStati.getItems().addAll(stati);
+    	this.btnVisualizzaVelivoli.setDisable(false);
+    	this.btnSimula.setDisable(false);
+    
     }
 
     @FXML
     void doSimula(ActionEvent event) {
-
+    	String g = txtG.getText();
+    	String t = txtT.getText();
+    	String stato = this.cmbBoxStati.getValue();
+    	if(g==null) {
+    		txtResult.setText("Devi inserire il numero di giorni!!!");
+    		return;
+    	}
+    	if(t==null) {
+    		txtResult.setText("Devi inserire il numero di viaggiatori!!!");
+    		return;
+    	}
+    	if(stato==null) {
+    		txtResult.setText("Devi selezionare uno stato di partenza!!!");
+    		return;
+    	}
+    	int giorni = Integer.parseInt(g);
+    	int persone = Integer.parseInt(t);
+    	if(giorni==0 || persone==0) {
+    		txtResult.appendText("i numeri inseriti devono essere maggiori di zero!!!");
+    		return;
+    	}
+    	txtResult.setText(this.model.simula(persone, giorni, stato));
+    	
     }
 
     @FXML
     void doVisualizzaVelivoli(ActionEvent event) {
+    	
+    	String stato = this.cmbBoxStati.getValue();    	
 
+    	if(stato==null) {
+    		txtResult.setText("Devi selezionare uno stato!");
+    		return;
+    	}
+    	String s = model.getVeicoli(stato);
+    	txtResult.setText(s);
+    	
     }
     
     public void setModel(Model model) {
-		this.model = model;	
+		this.model = model;
+		
 	}
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -73,6 +112,7 @@ public class ExtFlightDelaysController {
         assert txtT != null : "fx:id=\"txtT\" was not injected: check your FXML file 'ExtFlightDelays.fxml'.";
         assert txtG != null : "fx:id=\"txtG\" was not injected: check your FXML file 'ExtFlightDelays.fxml'.";
         assert btnSimula != null : "fx:id=\"btnSimula\" was not injected: check your FXML file 'ExtFlightDelays.fxml'.";
-
+        this.btnVisualizzaVelivoli.setDisable(true);
+        this.btnSimula.setDisable(true);
     }
 }
